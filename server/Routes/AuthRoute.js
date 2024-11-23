@@ -1,5 +1,4 @@
 import { Router } from "express";
-import express from 'express';
 import multer from "multer";
 import { signUp } from "../Controlers/AuthControler/SignUpControler.js";
 import { loginAuth } from "../Controlers/AuthControler/LoginAuthControler.js";

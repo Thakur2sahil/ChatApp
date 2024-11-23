@@ -1,8 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import http from 'http';
 import {pool} from './pool.js';
 import { Server as socketIo } from 'socket.io';
@@ -135,10 +133,6 @@ app.use('/api/single',single_Chat);
 
 app.use('/api/auth',authRouter)
 
-
-
-
-
 app.get('/context/userinfo', async (req, res) => {
         
         const userQuery = `SELECT * FROM sahil.chat_users`; // Change 'id' to the actual column name if necessary
@@ -165,7 +159,6 @@ app.use('/api/sidebar',sidebar)
 
 // All the create group api
 
-app.use('/api/creategroup',createGroup);
 app.use('/api/creategroup',createGroup);
 
 

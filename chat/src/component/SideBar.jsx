@@ -9,8 +9,7 @@ function SideBar() {
     const loginuser = localStorage.getItem('userId'); 
     const username = localStorage.getItem('name'); 
     const navigate = useNavigate(); 
-    const {count , setCount,sendUserId, setSendUserId,groupRefresh , setGroupRefresh} = useContext(contextapi)
-    const [messageSend, setMessageSend] = useState([]);  // Store unread messages for all users
+    const {count , setCount,sendUserId,fetchUnreadMessage,messageSend, setSendUserId,groupRefresh , setGroupRefresh} = useContext(contextapi)
     const [user, setUser] = useState([]);  // List of all users
     const [search, setSearch] = useState('');  // Search input
     const [filteredUsers, setFilteredUsers] = useState([]);  // Filtered user list
@@ -36,26 +35,13 @@ function SideBar() {
         } 
     };
 
-    // Fetch unread message count
-    const fetchUnreadMessage = async (loginuser) => {
-        try {
-            const res =  await axios.get('http://localhost:9000/api/sidebar/unreadmessage', { params: { loginuser } });
-            if (res.data) {
-                // Store unread messages data in state
-                setMessageSend(res.data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
-    // Mark a specific user's messages as read
     const markAsRead = async (userId) => {
         try {
             const response = await axios.get('http://localhost:9000/api/sidebar/markread', { params: { userId } });
             if (response.status === 200) {
                 console.log("Messages marked as read successfully.");
-                fetchUnreadMessage();
+                fetchUnreadMessage(loginuser);
                 localStorage.setItem("count",0);    
                 setCount(0);
             }
@@ -65,7 +51,7 @@ function SideBar() {
         }
     };
 
-    // Fetch group data
+
     const fetchGroup = async () => {
         try {
             const res = await axios.get('http://localhost:9000/api/sidebar/allgroupname', { params: { loginuser } });
@@ -163,7 +149,7 @@ function SideBar() {
                     </div>
                 ))
             ) : (
-                null
+                <div>No users found</div>
             )}
 
             {/* Groups */}

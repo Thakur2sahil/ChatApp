@@ -69,7 +69,7 @@ function CreateGroupRoom() {
       setFilterGroupUser([]);  
     }
     else{
-      toast.success(`${user.username} Already Select`) 
+      toast.error(`${user.username} Already Select`) 
     }
   };
 

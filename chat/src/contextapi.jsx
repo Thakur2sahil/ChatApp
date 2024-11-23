@@ -1,5 +1,5 @@
 import axios from "axios";
-import React ,{ createContext, useEffect, useState } from "react";
+import React ,{ createContext, useCallback, useEffect, useState } from "react";
 
 
 export const contextapi = createContext();
@@ -11,33 +11,51 @@ export const Myprovider = ({children}) =>{
     const [useremail , setUserEmail] = useState('');
     const [userId, setUserId] = useState(0);
     const token = localStorage.getItem('token')
+    const loginuser = localStorage.getItem('userId'); 
     const [count , setCount] = useState(()=>{
       return  parseInt(localStorage.getItem('count')) || 0;
     });
     const[sendUserId , setSendUserId] = useState(0);
     const [userCount , setUserCount] = useState(0);
     const [groupRefresh , setGroupRefresh] = useState(0);
+    const [messageSend, setMessageSend] = useState([]); 
+
+
+    const fetchUnreadMessage = async (loginuser) => {
+        try {
+            const res =  await axios.get('http://localhost:9000/api/sidebar/unreadmessage', { params: { loginuser } });
+            if (res.data) {
+                // Store unread messages data in state
+                setMessageSend(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const ftechdata = async () =>{
+
+        try {
+        const res = await axios.get('http://lcoalhost:9000/context/userinfo' )
+        if(res.data)
+        {
+            console.log(res.data);
+            
+        }
+        else{
+            console.log("NO data");
+            
+        }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
 
     useEffect(() => {
         
-        const ftechdata = async () =>{
-
-            try {
-            const res = await axios.get('http://lcoalhost:9000/context/userinfo' )
-            if(res.data)
-            {
-                console.log(res.data);
-                
-            }
-            else{
-                console.log("NO data");
-                
-            }
-            } catch (error) {
-                console.log(error);
-            }
-        }
+        fetchUnreadMessage();
+       
 
         setUserEmail(localStorage.getItem('email'));
         setUserImage(localStorage.getItem('image'));
@@ -48,11 +66,16 @@ export const Myprovider = ({children}) =>{
 
     useEffect(()=>{
         localStorage.setItem('count' ,count);
+         
     },[count]);
+    useCallback(()=>{
+        fetchUnreadMessage();  
+    },[count])
 
     
+    
     return (
-        <contextapi.Provider value={{ userImage, username, userId, useremail,count,sendUserId,groupRefresh , setGroupRefresh, setSendUserId,  setCount, setUserEmail, setUserImage, setUserName }}>
+        <contextapi.Provider value={{ userImage, username, userId, useremail,count,sendUserId,groupRefresh , messageSend, setMessageSend,setGroupRefresh, setSendUserId,  setCount, setUserEmail, setUserImage, setUserName,fetchUnreadMessage }}>
             {children}
         </contextapi.Provider>
     );
