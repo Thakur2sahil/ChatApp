@@ -175,6 +175,53 @@ function GroupChat() {
     setIsAddUser(false);
   };
 
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    
+    // Check if the date is valid
+    if (isNaN(date)) {
+      return 'Invalid date';
+    }
+  
+    // Check if the message is today
+    const isToday = now.toDateString() === date.toDateString();
+    if (isToday) {
+      const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+      return  `${date.toLocaleTimeString([], options)}`;
+    }
+  
+    // Check if the message is yesterday
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = yesterday.toDateString() === date.toDateString();
+    if (isYesterday) {
+      const options = { hour: '2-digit', minute: '2-digit', hour12: true };
+      return  `${date.toLocaleTimeString([], options)}`;
+    }
+  
+    // For specific dates, return a formatted date
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString([], options);
+  };
+  
+  // Utility function to group messages by date
+  const groupMessagesByDate = (messages) => {
+    const groupedMessages = {};
+  
+    messages.forEach((message) => {
+      const date = new Date(message.sent_at).toDateString();
+      if (!groupedMessages[date]) {
+        groupedMessages[date] = [];
+      }
+      groupedMessages[date].push(message);
+    });
+  
+    return groupedMessages;
+  };
+
+  const groupedMessages = groupMessagesByDate(messages);
+
   return (
     <div className="h-full flex flex-col bg-gray-100">
       {/* Navbar for the page */}
@@ -287,19 +334,26 @@ function GroupChat() {
 
       {/* Message  */}
       <div className="flex-1 overflow-y-auto p-2 bg-gray-50">
-        {messages.map((msg) => (
-          <div key={msg.id} className="flex w-full justify-between">
-            {msg.user_id != senderId ? (
-              <div className="m-2 border rounded-md border-solid p-2 bg-gray-200 text-gray-800 message-left">
-                {msg.username}
-                <div className="p-2">{msg.message}</div>
+        {Object.keys(groupedMessages).map((date) => (
+          <div key={date} className="mb-4">
+            <div className="text-center text-gray-500 text-sm mb-2">{formatDate(date)}</div>
+            {groupedMessages[date].map((msg) => (
+              <div key={msg.id} className="flex w-full justify-between">
+                {msg.user_id != senderId ? (
+                  <div className="m-2 border rounded-md border-solid p-2 bg-gray-200 text-gray-800 message-left">
+                    {msg.username}
+                    <div className="p-2">{msg.message}</div>
+                    <div className="text-xs text-gray-500">{msg.sent_at ? formatDate(msg.sent_at) : 'No date available'}</div>
+                  </div>
+                ) : (
+                  <div className="m-2 border rounded-md border-solid p-2 ml-auto bg-blue-500 text-white message-right">
+                    You
+                    <div className="p-2">{msg.message}</div>
+                    <div className="text-xs text-gray-200">{msg.sent_at ? formatDate(msg.sent_at) : 'No date available'}</div>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="m-2 border rounded-md border-solid p-2 ml-auto bg-blue-500 text-white message-right">
-                You
-                <div className="p-2">{msg.message}</div>
-              </div>
-            )}
+            ))}
           </div>
         ))}
         <div ref={messagesEndRef} />
