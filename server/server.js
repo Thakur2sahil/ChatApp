@@ -20,14 +20,14 @@ const server = http.createServer(app);
 const io = new socketIo(server, {  // Use socketIo here
     cors: {
         origin: "*", // Allow requests from this frontend URL
-        methods: ["GET", "POST"], // Allow these HTTP methods
+        methods: ['GET', 'POST', 'DELETE', 'PATCH'], // Allow these HTTP methods
         allowedHeaders: ["Authorization","Content-Type"], // Allow these headers
         credentials: true // Allow cookies and credentials
     }
 });
 app.use(cors({
     origin: "*",  // Allow requests from the frontend URL
-    methods: ["GET", "POST"],
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     allowedHeaders: ["Authorization","Content-Type"],
     credentials: true
 }));

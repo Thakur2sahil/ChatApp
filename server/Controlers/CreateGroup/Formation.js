@@ -3,12 +3,11 @@ import { pool } from "../../pool.js";
 const formation = async (req, res) => {
     const { loginuser, groupName, selectedUsers } = req.body;
 
-    // Validate the inputs before interacting with the database
-    if (!groupName || selectedUsers.length < 2) {
-        return res.status(400).json({ error: "Group name is required and at least two users must be selected." });
+    // Validate inputs before interacting with the database
+    if (!loginuser || !groupName || selectedUsers.length < 2) {
+        return res.status(400).json({ error: "Login user, group name, and at least two users must be provided." });
     }
 
-    // Use pool.connect() only for transactions
     const client = await pool.connect();
     
     try {
@@ -24,22 +23,24 @@ const formation = async (req, res) => {
         const groupCreateResult = await client.query(groupQuery, [groupName, loginuser]);
         const groupId = groupCreateResult.rows[0].id;
 
-        // Step 2: Insert the creator as an admin and other users as members in the group_members table
+        // Step 2: Insert the creator as a creator and other users as members in the group_members table
         const userIds = [loginuser, ...selectedUsers.map(user => user.id)];
 
-        // Use parameterized query for inserting all users with their roles
+        // Prepare query and values for inserting users into group_members
         const userInsertQuery = `
-            INSERT INTO sahil.group_members (user_id, group_id, role)
-            VALUES ${userIds.map((_, idx) => `($${idx * 3 + 1}, $${idx * 3 + 2}, $${idx * 3 + 3})`).join(', ')}
+            INSERT INTO sahil.group_members (user_id, group_id, role, created_by)
+            VALUES ${userIds.map((_, idx) => `($${idx * 4 + 1}, $${idx * 4 + 2}, $${idx * 4 + 3}, $${idx * 4 + 4})`).join(', ')}
         `;
         const userValues = [];
 
-        // Add the creator (loginuser) as admin
-        userValues.push(loginuser, groupId, 'admin');
+        // Add the creator (loginuser) as creator
+        userValues.push(loginuser, groupId, 'admin', 'creator');
 
-        // Add the other users as members
+        // Add the other users as members (excluding the creator)
         selectedUsers.forEach(user => {
-            userValues.push(user.id, groupId, 'member');
+            if (user.id !== loginuser) {
+                userValues.push(user.id, groupId, 'member', 'added');
+            }
         });
 
         // Execute the batch insert for all users
@@ -62,4 +63,4 @@ const formation = async (req, res) => {
     }
 }
 
-export {formation};
+export {formation}

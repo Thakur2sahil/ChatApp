@@ -25,7 +25,7 @@ export const Myprovider = ({children}) =>{
         try {
             const res =  await axios.get('http://localhost:9000/api/sidebar/unreadmessage', { params: { loginuser } });
             if (res.data) {
-                // Store unread messages data in state
+               
                 setMessageSend(res.data);
             }
         } catch (error) {
@@ -33,23 +33,23 @@ export const Myprovider = ({children}) =>{
         }
     };
 
-    const ftechdata = async () =>{
+    // const ftechdata = async () =>{
 
-        try {
-        const res = await axios.get('http://lcoalhost:9000/context/userinfo' )
-        if(res.data)
-        {
-            console.log(res.data);
+    //     try {
+    //     const res = await axios.get('http://lcoalhost:9000/context/userinfo' )
+    //     if(res.data)
+    //     {
+    //         console.log(res.data);
             
-        }
-        else{
-            console.log("NO data");
+    //     }
+    //     else{
+    //         console.log("NO data");
             
-        }
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    //     }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
 
     useEffect(() => {

@@ -2,17 +2,24 @@ import {pool} from '../../pool.js';
 
 const allUserDetail= async(req,res)=>{
 
-    const{gId} = req.query;
+    const{gId,senderId} = req.query;
     
     try {
-        
-        const query =`SELECT  gm.role,cu.id, cu.username, cu.email, cu.profile_image AS image
+
+        const query = `SELECT  gm.role,cu.id, cu.username, cu.email, cu.profile_image AS image
                       FROM sahil.group_members AS gm
                       JOIN sahil.chat_users AS cu
                       ON gm.user_id = cu.id
-                      WHERE gm.group_id = $1`;
-
+                      WHERE gm.group_id =$1`
         const result = await pool.query(query,[gId]);
+        
+        // const query =`SELECT  gm.role,cu.id, cu.username, cu.email, cu.profile_image AS image
+        //               FROM sahil.group_members AS gm
+        //               JOIN sahil.chat_users AS cu
+        //               ON gm.user_id = cu.id
+        //               WHERE gm.group_id =$1 and cu.id!=$2;`;
+
+        // const result = await pool.query(query,[gId,senderId]);
         if(result)
         {
             // console.log(result);

@@ -10,25 +10,25 @@ function SideBar() {
     const username = localStorage.getItem('name'); 
     const navigate = useNavigate(); 
     const {count , setCount,sendUserId,fetchUnreadMessage,messageSend, setSendUserId,groupRefresh , setGroupRefresh} = useContext(contextapi)
-    const [user, setUser] = useState([]);  // List of all users
-    const [search, setSearch] = useState('');  // Search input
-    const [filteredUsers, setFilteredUsers] = useState([]);  // Filtered user list
-    const [allGroup, setAllGroup] = useState([]);  // List of all groups
+    const [user, setUser] = useState([]); 
+    const [search, setSearch] = useState('');  
+    const [filteredUsers, setFilteredUsers] = useState([]);  
+    const [allGroup, setAllGroup] = useState([]);  
     const [openUserId, setOpenUserId] = useState(null);  
     const [openGroupId, setOpenGroupId] = useState(null); 
     const [currentuser, setCurrentUser] = useState(()=>{
         return parseInt(localStorage.getItem('currentuser')) || 0;
     });
 
-    // Fetch user data
+    
     const fetchUser = async () => { 
         try { 
             const res = await axios.get('http://localhost:9000/api/sidebar/allusersname', { params: { loginuser } }); 
             if (res.data.length > 0) { 
                 setUser(res.data); 
-                setFilteredUsers(res.data);  // Set filtered users initially to all users                            
+                setFilteredUsers(res.data);                             
             } else { 
-                toast.error("No data found"); 
+              console.log("No data found"); 
             } 
         } catch (error) { 
             console.error("Error fetching data: " + error.message); 
@@ -40,14 +40,14 @@ function SideBar() {
         try {
             const response = await axios.get('http://localhost:9000/api/sidebar/markread', { params: { userId } });
             if (response.status === 200) {
-                console.log("Messages marked as read successfully.");
+               
                 fetchUnreadMessage(loginuser);
                 localStorage.setItem("count",0);    
                 setCount(0);
             }
         } catch (error) {
             console.error("Error marking messages as read:", error);
-            toast.error("Failed to mark messages as read.");
+           
         }
     };
 
@@ -63,7 +63,7 @@ function SideBar() {
         }
     };
 
-    // Handle search input
+   
     const handleSearch = (e) => { 
         const value = e.target.value; 
         setSearch(value); 
@@ -76,7 +76,7 @@ function SideBar() {
         } 
     };
 
-    // Handle user click
+   
     const handleSingle = (userId, username, image) => { 
         setOpenUserId(userId);  
         setCurrentUser(userId);
@@ -84,10 +84,10 @@ function SideBar() {
         setCount(0);
         localStorage.setItem("currentuser", userId);
         navigate('/dashboard/single', { state: { userId, username, image } }); 
-        markAsRead(userId);  // Mark messages as read for the selected user
+        markAsRead(userId); 
     };
 
-    // Handle group click
+    
     const handleAllGroup = (group) => {
         setOpenGroupId(group.gid); 
         // localStorage.setItem('count', 0);

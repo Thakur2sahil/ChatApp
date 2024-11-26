@@ -5,11 +5,11 @@ const {gId} = req.query;
 
     try {
         
-        const query = `SELECT gm.user_id, cu.*
-        FROM sahil.group_members AS gm
-        FULL JOIN sahil.chat_users AS cu
-          ON gm.user_id = cu.id
-        WHERE gm.user_id IS NULL OR  cu.id IS NULL AND gm.group_id=$1`;
+        const query = `SELECT cu.*
+FROM sahil.chat_users AS cu
+LEFT JOIN sahil.group_members AS gm
+  ON cu.id = gm.user_id AND gm.group_id = $1
+WHERE gm.user_id IS NULL;`;
 
         const result = await pool.query(query,[gId]);
         if (result.rows.length > 0) {

@@ -183,7 +183,7 @@ function SingleChat() {
 
             {/* Chat Input */}
             <div className="bg-white shadow-sm">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 p-2">
                     <input
                         type="text"
                         value={message}
