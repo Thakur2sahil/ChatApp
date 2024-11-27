@@ -66,7 +66,8 @@ function CreateGroupRoom() {
       setSelectedUsers(prevSelected => [...prevSelected, user]);
       // toast.success(`${user.username} is Select`) 
       setSearch('');  
-      setFilterGroupUser([]);  
+      setFilterGroupUser([]); 
+      setUser(prevUsers => prevUsers.filter(u => u.id !== user.id)); 
     }
     else{
       toast.error(`${user.username} Already Select`) 
@@ -74,7 +75,14 @@ function CreateGroupRoom() {
   };
 
   const handleRemoveUser = (userId) => {
-    setSelectedUsers(prevSelected => prevSelected.filter(user => user.id !== userId));
+    setSelectedUsers(prevSelected => {
+      const newSelected = prevSelected.filter(user => user.id !== userId);
+      const removedUser = prevSelected.find(user => user.id === userId);
+      if (removedUser) {
+        setUser(prevUsers => [...prevUsers, removedUser]); // Add the removed user back to the available users list
+      }
+      return newSelected;
+    });
   };
 
   const handleCreateGroup = async(e) => {
@@ -145,33 +153,22 @@ function CreateGroupRoom() {
                   :
                   <div></div>
                   }
-                    <input 
-                      type="search" 
-                      placeholder="Choose the user" 
-                      value={search}
-                      onChange={e=>handleUserSearch(e)}
-                      className="mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 text-black focus:ring-blue-500" 
-                    />
-                    {filterGroupUser.length > 0 && (
-          <div>
-              <div className="absolute   w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto z-10">
-              {filterGroupUser.map((user) => (
-                <div
-                  key={user.id}
-                  onClick={() => handleSelectUser(user)}
-                  className=" flex p-2 hover:bg-gray-200 cursor-pointer"
-                >
-                 
-                 <div>
-                 <span className="block font-semibold">{user.username}</span>
-                 <span className="block text-sm text-gray-500">{user.email}</span>
-                 </div>
-                
-                </div>
-              ))}
-            </div>
-          </div>
-          )}
+             {user.length>0 ? 
+                        <div className='h-64 overflow-auto '>
+                          {user.map((use)=>(
+                            <div
+                            key={use.id}
+                            onClick={() => handleSelectUser(use)}
+                            className="flex p-2 hover:bg-gray-200 border-none text-center   cursor-pointer"
+                          >
+                            <div className='text-center w-full '>
+                              <div className="block text-center font-semibold">{use.username}</div>
+                              <div className="block text-center text-sm text-gray-500">{use.email}</div>
+                            </div>
+                          </div>
+                          ))}
+                        </div>
+                      :null}
 
 
                    

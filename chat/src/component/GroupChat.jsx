@@ -542,7 +542,7 @@
           <div className="flex-1 overflow-y-auto p-2 bg-gray-50">
             {Object.keys(groupedMessages).map((date) => (
               <div key={date} className="mb-4">
-                <div className="text-center text-gray-500 text-sm mb-2">{formatDate(date)}</div>
+                {/* <div className="text-center text-gray-500 text-sm mb-2">{formatDate(date)}</div> */}
                 {groupedMessages[date].map((msg) => (
                   <div key={msg.id} className="flex w-full justify-between">
                     {msg.user_id != senderId ? (
